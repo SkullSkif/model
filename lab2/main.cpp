@@ -155,14 +155,14 @@ public:
             bool is_critical = (w.total_float == 0);
             
             cout << left
-                 << setw(10) << (to_string(w.start) + "-" + to_string(w.end))
-                 << setw(12) << w.duration
-                 << setw(15) << w.t_early_start
-                 << setw(15) << w.t_early_finish
-                 << setw(15) << w.t_late_start
-                 << setw(15) << w.t_late_finish
-                 << setw(12) << w.total_float
-                 << setw(12) << w.free_float;
+                 << setw(8) << (to_string(w.start) + "-" + to_string(w.end))
+                 << setw(11) << w.duration
+                 << setw(14) << w.t_early_start
+                 << setw(14) << w.t_early_finish
+                 << setw(14) << w.t_late_start
+                 << setw(12) << w.t_late_finish
+                 << setw(8) << w.total_float
+                 << setw(13) << w.free_float;
             
             if (is_critical) {
                 cout << "   Да";
