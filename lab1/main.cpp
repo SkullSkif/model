@@ -40,7 +40,7 @@ void generate_samples(int n) {
 
 
 int main() {
-    const int N = 50000;  
+    const int N = 1000000;  
     
     generate_samples(N);
     
