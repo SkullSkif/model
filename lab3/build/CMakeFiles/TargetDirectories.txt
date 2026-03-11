@@ -1,0 +1,3 @@
+/home/skif/model/rep/model/lab3/build/CMakeFiles/graph_generator.dir
+/home/skif/model/rep/model/lab3/build/CMakeFiles/edit_cache.dir
+/home/skif/model/rep/model/lab3/build/CMakeFiles/rebuild_cache.dir
