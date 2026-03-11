@@ -132,6 +132,40 @@ private:
         }
     }
 
+    vector<int> findCriticalPath()
+    {
+        vector<int> path;
+        vector<bool> visited(num_events + 1, false);
+        
+        int current = 1;
+        path.push_back(current);
+        visited[current] = true;
+        
+        while (current != num_events) {
+            bool found = false;
+            
+            for (int work_idx : adj_list[current]) {
+                Work& w = works[work_idx];
+                
+                if (w.full_reserve == 0 && w.reserve == 0 && w.start == current) {
+                    if (!visited[w.end]) {
+                        current = w.end;
+                        path.push_back(current);
+                        visited[current] = true;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!found) {
+                break;
+            }
+        }
+        
+        return path;
+    }
+
 public:
     Graph() : num_events(0), use_letters(false)
     {
@@ -236,7 +270,7 @@ public:
         for (size_t k = 0; k < works.size(); k++) {
             const Work& w = works[k];
 
-            bool is_critical = (w.full_reserve == 0);
+            bool is_critical = (w.full_reserve == 0 && w.reserve == 0);
 
             string code = getEventName(w.start) + '-' + getEventName(w.end);
 
@@ -254,36 +288,21 @@ public:
         cout << "Длина критического пути: " << critical_path_length << endl;
 
         cout << "\nКритический путь: ";
-        findAndPrintCriticalPath();
+        vector<int> critical_path = findCriticalPath();
+        
+        for (size_t i = 0; i < critical_path.size(); i++) {
+            cout << getEventName(critical_path[i]);
+            if (i < critical_path.size() - 1)
+                cout << " -> ";
+        }
         cout << endl;
+
     }
 
     void findAndPrintCriticalPath()
     {
-        vector<int> path;
-        vector<bool> visited(num_events + 1, false);
-
-        int current = 1;
-        path.push_back(current);
-
-        while (current != num_events) {
-            bool found = false;
-            for (int work_idx : adj_list[current]) {
-                Work& w = works[work_idx];
-                if (w.full_reserve == 0 && w.start == current) {
-                    if (!visited[w.end]) {
-                        current = w.end;
-                        path.push_back(current);
-                        visited[current] = true;
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-                break;
-        }
-
+        vector<int> path = findCriticalPath();
+        
         for (size_t i = 0; i < path.size(); i++) {
             cout << getEventName(path[i]);
             if (i < path.size() - 1)
