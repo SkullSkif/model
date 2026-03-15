@@ -78,7 +78,7 @@ private:
         int last_event = 0;
         
         for (const Work& w : works) {
-            if (w.t_early_finish > max_event_time) {
+            if (w.t_early_finish >= max_event_time) {
                 max_event_time = w.t_early_finish;
                 last_event = w.end;
             }
@@ -257,8 +257,8 @@ public:
         }
         
         cout << left << setw(12) << "Шифр" << setw(12) << "t(i,j)" << setw(15)
-             << "t^РН_ij" << setw(15) << "t^РО_ij" << setw(15) << "t^ПН_ij"
-             << setw(15) << "t^ПО_ij" << setw(12) << "R_ij" << setw(12)
+             << "t^РН_ij" << setw(19) << "t^РО_ij" << setw(15) << "t^ПН_ij"
+             << setw(19) << "t^ПО_ij" << setw(14) << "R_ij" << setw(18)
              << "r_ij"
              << "Кр." << endl;
 
@@ -276,7 +276,7 @@ public:
 
             cout << left << setw(12) << code << setw(12) << w.duration
                  << setw(15) << w.t_early_start << setw(15) << w.t_early_finish
-                 << setw(15) << w.t_late_start << setw(15) << w.t_late_finish
+                 << setw(11) << w.t_late_start << setw(15) << w.t_late_finish
                  << setw(12) << w.full_reserve << setw(12) << w.reserve;
 
             if (is_critical)
