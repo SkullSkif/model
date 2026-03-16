@@ -30,7 +30,7 @@ private:
     std::vector<std::vector<Edge>> adjacencyList;
     int numPoints;
     
-    
+    // DFS для поиска циклов
     bool hasCycleUtil(int v, std::vector<bool>& visited, std::vector<bool>& recStack, std::vector<int>& parent) const {
         if (!visited[v]) {
             visited[v] = true;
@@ -42,7 +42,7 @@ private:
                     if (hasCycleUtil(edge.to, visited, recStack, parent))
                         return true;
                 } else if (recStack[edge.to] && edge.to != parent[v]) {
-                    return true; 
+                    return true; // Найден цикл
                 }
             }
         }
@@ -81,11 +81,11 @@ public:
                 
                 if (probabilityType == "exp") {
                     prob = std::exp(-a * std::pow(d, b));
-                } else { 
+                } else { // inverse power
                     prob = 1.0 / (std::pow(d, b));
                 }
                 
-                
+                // Случайное решение о добавлении ребра
                 if (dis(gen) < prob) {
                     adjacencyList[i].emplace_back(i, j, d, prob);
                     adjacencyList[j].emplace_back(j, i, d, prob);
@@ -93,7 +93,7 @@ public:
             }
         }
         
-        
+        // Удаляем циклы, чтобы получить дерево
         makeAcyclic();
     }
     
@@ -102,7 +102,7 @@ public:
         std::vector<bool> visited(numPoints, false);
         std::queue<int> q;
         
-        
+        // Начинаем с первой вершины
         if (numPoints > 0) {
             visited[0] = true;
             q.push(0);
@@ -122,10 +122,10 @@ public:
             }
         }
         
-        
+        // Добавляем ребра для изолированных вершин
         for (int i = 0; i < numPoints; ++i) {
             if (!visited[i]) {
-                
+                // Находим ближайшую вершину
                 double minDist = std::numeric_limits<double>::max();
                 int nearest = -1;
                 
@@ -170,15 +170,15 @@ public:
         
         for (int i = 0; i < numPoints; ++i) {
             for (const auto& edge : adjacencyList[i]) {
-                if (edge.from < edge.to) { 
+                if (edge.from < edge.to) { // Обрабатываем каждое ребро один раз
                     bool keepEdge = true;
                     
-                    
+                    // Проверка на максимальное расстояние
                     if (maxDistance > 0 && edge.weight > maxDistance) {
                         keepEdge = false;
                     }
                     
-                    
+                    // Проверка на максимальную степень
                     if (maxDegree > 0) {
                         int degree1 = adjacencyList[edge.from].size();
                         int degree2 = adjacencyList[edge.to].size();
@@ -255,21 +255,21 @@ public:
         }
         plt::title(fullTitle);
         
-        
+        // Рисуем вершины
         std::vector<double> x_coords, y_coords;
         for (const auto& p : points) {
             x_coords.push_back(p.x);
             y_coords.push_back(p.y);
         }
         
-        
+        // Рисуем ребра
         for (int i = 0; i < numPoints; ++i) {
             for (const auto& edge : adjacencyList[i]) {
                 if (edge.from < edge.to) {
                     std::vector<double> x = {points[edge.from].x, points[edge.to].x};
                     std::vector<double> y = {points[edge.from].y, points[edge.to].y};
                     
-                    
+                    // Толщина линии пропорциональна вероятности
                     float lineWidth = 1.0f + static_cast<float>(edge.probability * 3);
                     plt::plot(x, y, {{"color", "blue"}, {"linewidth", std::to_string(lineWidth)}});
                 }
@@ -301,7 +301,7 @@ public:
         std::cout << "Допустимая глубина дерева: " << allowedDepth << std::endl;
         std::cout << "Наличие циклов: " << (hasCycles() ? "ДА" : "НЕТ") << std::endl;
         
-        
+        // Статистика по степеням вершин
         std::vector<int> degrees(numPoints);
         int totalEdges = 0;
         
@@ -310,7 +310,7 @@ public:
             totalEdges += degrees[i];
         }
         
-        totalEdges /= 2; 
+        totalEdges /= 2; // Каждое ребро посчитано дважды
         
         std::cout << "Количество ребер: " << totalEdges << std::endl;
         std::cout << "Средняя степень: " << static_cast<double>(totalEdges * 2) / numPoints << std::endl;
@@ -344,16 +344,16 @@ public:
         std::vector<Graph> graphs;
         
         for (int i = 0; i < graphsPerPattern; ++i) {
-            
+            // Генерируем случайные точки
             auto points = generateRandomPoints(numPoints);
             
-            
+            // Создаем граф с этими точками
             Graph g(numPoints);
             for (const auto& p : points) {
                 g.addPoint(p);
             }
             
-            
+            // Выбираем случайные параметры из заданного диапазона
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_real_distribution<> aDis(aValues[0], aValues[1]);
@@ -367,7 +367,7 @@ public:
             
             g.buildGraph(a, b, probType);
             
-            
+            // Применяем ограничения
             g.applyConstraints(10, 70);
             
             g.printStats();
@@ -391,7 +391,7 @@ public:
             "Inv_LargeB"
         };
         
-        
+        // Создаем папку для графиков
         system("mkdir -p graphs");
         
         for (size_t p = 0; p < allGraphs.size(); ++p) {
@@ -417,7 +417,7 @@ int main() {
     std::vector<std::vector<double>> allParams;
     std::vector<std::string> probTypes;
     
-    
+    // Паттерн 1: Экспоненциальная вероятность, низкая плотность (маленькие a и b)
     auto pattern1 = generator.generatePattern(
         "Pattern1_Exp_LowDensity",
         {0.01, 0.05}, {1.0, 1.5},
@@ -427,7 +427,7 @@ int main() {
     allParams.push_back({0.03, 1.2, 0.02, 1.3, 0.04, 1.1});
     probTypes.push_back("exp");
     
-    
+    // Паттерн 2: Экспоненциальная вероятность, высокая плотность (большие a и b)
     auto pattern2 = generator.generatePattern(
         "Pattern2_Exp_HighDensity",
         {0.5, 1.0}, {2.5, 3.0},
@@ -437,7 +437,7 @@ int main() {
     allParams.push_back({0.7, 2.8, 0.8, 2.6, 0.6, 2.9});
     probTypes.push_back("exp");
     
-    
+    // Паттерн 3: Обратная степенная, низкая плотность (большой b)
     auto pattern3 = generator.generatePattern(
         "Pattern3_Inv_LowDensity",
         {0.0, 0.0}, {2.5, 3.0},
@@ -447,7 +447,7 @@ int main() {
     allParams.push_back({0.0, 2.8, 0.0, 2.6, 0.0, 2.9});
     probTypes.push_back("inv");
     
-    
+    // Паттерн 4: Обратная степенная, высокая плотность (маленький b)
     auto pattern4 = generator.generatePattern(
         "Pattern4_Inv_HighDensity",
         {0.0, 0.0}, {1.0, 1.5},
@@ -457,7 +457,7 @@ int main() {
     allParams.push_back({0.0, 1.2, 0.0, 1.3, 0.0, 1.1});
     probTypes.push_back("inv");
     
-    
+    // Паттерн 5: Экспоненциальная, маленькая a, большая b (дальние связи с сильным затуханием)
     auto pattern5 = generator.generatePattern(
         "Pattern5_Exp_SmallA_LargeB",
         {0.01, 0.05}, {3.0, 4.0},
@@ -467,7 +467,7 @@ int main() {
     allParams.push_back({0.03, 3.5, 0.02, 3.7, 0.04, 3.2});
     probTypes.push_back("exp");
     
-    
+    // Паттерн 6: Экспоненциальная, большая a, маленькая b (локальные связи, слабое затухание)
     auto pattern6 = generator.generatePattern(
         "Pattern6_Exp_LargeA_SmallB",
         {0.5, 1.0}, {1.0, 1.5},
@@ -477,7 +477,7 @@ int main() {
     allParams.push_back({0.7, 1.2, 0.8, 1.3, 0.6, 1.1});
     probTypes.push_back("exp");
     
-    
+    // Паттерн 7: Степенная, маленькая b (слабая зависимость от расстояния - более равномерные связи)
     auto pattern7 = generator.generatePattern(
         "Pattern7_Inv_SmallB",
         {0.0, 0.0}, {1.0, 1.5},
@@ -487,7 +487,7 @@ int main() {
     allParams.push_back({0.0, 1.2, 0.0, 1.3, 0.0, 1.1});
     probTypes.push_back("inv");
     
-    
+    // Паттерн 8: Степенная, большая b (сильная зависимость от расстояния - только ближайшие связи)
     auto pattern8 = generator.generatePattern(
         "Pattern8_Inv_LargeB",
         {0.0, 0.0}, {3.0, 4.0},
@@ -506,7 +506,7 @@ int main() {
         }
     }
     
-    
+    // Визуализация
     std::cout << "\nНачинаем визуализацию графов..." << std::endl;
     generator.visualizeAllPatterns(allGraphs, allParams, probTypes);
     
